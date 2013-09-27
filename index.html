@@ -93,6 +93,8 @@
 
 		var context = new webkitAudioContext();
 
+		var audio_started = false;
+
 		function addbutton(def) {
 			var loop = new SustainFile(context);
 			var player = new SustainPlayer(context, loop);
@@ -114,7 +116,17 @@
 
 			var playing = false;
 
-			button.addEventListener('mouseup', function() {
+			button.addEventListener('mousedown', function() {
+
+				if (!audio_started) {
+					// create empty buffer
+					var buffer = context.createBuffer(1, 1, 22050);
+					var source = context.createBufferSource();
+					source.buffer = buffer;
+					source.connect(context.destination);
+					source.noteOn(0);
+					audio_started = true;
+				}
 
 				if (!playing) {
 					button.className = 'btn down';
