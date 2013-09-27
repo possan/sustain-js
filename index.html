@@ -73,7 +73,7 @@
 </head>
 <body>
 	<div id="overlay">
-		WebAudio Sustain-loop test (hold buttons)<br/>
+		WebAudio Sustain-loop test (tap to toggle loop)<br/>
 		by <a href="https://twitter.com/possan">@possan</a>
 		- <a href="https://github.com/possan/sustain-js">fork it on github</a>
 	</div>
@@ -103,31 +103,22 @@
 			span.innerHTML = def.title;
 			div2.appendChild(span);
 
-			if ('ontouchstart' in document.documentElement) {
-				button.addEventListener('touchstart', function() {
+			var playing = false;
+
+			button.addEventListener('mouseup', function() {
+
+				if (!playing) {
 					button.className = 'btn down';
 					player.attack();
-					return false;
-				});
-
-				button.addEventListener('touchend', function() {
+					playing = true;
+				} else {
 					button.className = 'btn';
 					player.release();
-					return false;
-				});
-			} else {
-				button.addEventListener('mousedown', function() {
-					button.className = 'btn down';
-					player.attack();
-					return false;
-				});
+					playing = false;
+				}
 
-				button.addEventListener('mouseup', function() {
-					button.className = 'btn';
-					player.release();
-					return false;
-				});
-			}
+				return false;
+			});
 
 			player.connect(context.destination);
 
