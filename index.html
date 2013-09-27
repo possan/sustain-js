@@ -25,20 +25,20 @@
 			margin: 0;
 			padding: 10px;
 			color: #fff;
-			position: fixed;
 			bottom: 0px;
 			background-color: rgba(0,0,0,0.5);
+			text-align: center;
 		}
 
 		div.btn {
 			display: block;
-			height: 200px;
+			height: 230px;
 			cursor: pointer;
 			border-bottom: 1px solid #444;
 			border-top: 1px solid #bbb;
 			background-color: green;
 			background-image: -webkit-linear-gradient(bottom, #666 7%, #999 90%);
-
+			-webkit-user-select: none;
 		}
 
 		div.btn div {
@@ -49,13 +49,14 @@
 			display: block;
 			width: 100px;
 			height: 100px;
-			margin: 35px auto 15px auto;
+			border: 4px solid #fff;
+			margin: 45px auto 20px auto;
 			border-radius: 100px;
 			background-color: #333;
 			box-shadow: 0 5px 6px rgba(0,0,0,0.22);
+			-webkit-user-select: none;
 		}
 
-		div.btn:hover div img,
 		div.btn.down div img {
 			-webkit-transform: scale(1.1) rotateZ(5deg);
 		}
@@ -65,13 +66,16 @@
 			text-align: center;
 			font-size: 140%;
 			text-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+			-webkit-user-select: none;
 		}
 
 	</style>
 </head>
 <body>
 	<div id="overlay">
-		WebAudio Sustain-loop test (hold buttons) - <a href="https://github.com/possan/sustain-js">fork it</a> - by <a href="https://twitter.com/possan">@possan</a>
+		WebAudio Sustain-loop test (hold buttons)<br/>
+		by <a href="https://twitter.com/possan">@possan</a>
+		- <a href="https://github.com/possan/sustain-js">fork it on github</a>
 	</div>
 
 	<div id="buttons"></div>
@@ -99,15 +103,31 @@
 			span.innerHTML = def.title;
 			div2.appendChild(span);
 
-			button.addEventListener('mousedown', function() {
-				button.className = 'btn down';
-				player.attack();
-			});
+			if ('ontouchstart' in document.documentElement) {
+				button.addEventListener('touchstart', function() {
+					button.className = 'btn down';
+					player.attack();
+					return false;
+				});
 
-			button.addEventListener('mouseup', function() {
-				button.className = 'btn';
-				player.release();
-			});
+				button.addEventListener('touchend', function() {
+					button.className = 'btn';
+					player.release();
+					return false;
+				});
+			} else {
+				button.addEventListener('mousedown', function() {
+					button.className = 'btn down';
+					player.attack();
+					return false;
+				});
+
+				button.addEventListener('mouseup', function() {
+					button.className = 'btn';
+					player.release();
+					return false;
+				});
+			}
 
 			player.connect(context.destination);
 
