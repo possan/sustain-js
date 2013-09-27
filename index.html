@@ -1,46 +1,153 @@
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, maximum-scale=1">
 	<script src="sustain.js"></script>
 	<style>
+
+		body {
+			background-color: #333;
+			color: #fff;
+			margin: 0;
+			padding: 0;
+			font: 9pt Georgia, Tahoma, Serif;
+		}
+
+		a {
+			color: #f8c;
+			text-decoration: none;
+		}
 
 		button {
 			font-size: 500%;
 		}
 
+		div#overlay {
+			margin: 0;
+			padding: 10px;
+			color: #fff;
+			position: fixed;
+			bottom: 0px;
+			background-color: rgba(0,0,0,0.5);
+		}
+
+		div.btn {
+			display: block;
+			height: 200px;
+			cursor: pointer;
+			border-bottom: 1px solid #444;
+			border-top: 1px solid #bbb;
+			background-color: green;
+			background-image: -webkit-linear-gradient(bottom, #666 7%, #999 90%);
+
+		}
+
+		div.btn div {
+			width: 100%;
+		}
+
+		div.btn div img {
+			display: block;
+			width: 100px;
+			height: 100px;
+			margin: 35px auto 15px auto;
+			border-radius: 100px;
+			background-color: #333;
+			box-shadow: 0 5px 6px rgba(0,0,0,0.22);
+		}
+
+		div.btn:hover div img,
+		div.btn.down div img {
+			-webkit-transform: scale(1.1) rotateZ(5deg);
+		}
+
+		div.btn div span {
+			display: block;
+			text-align: center;
+			font-size: 140%;
+			text-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+		}
+
 	</style>
 </head>
 <body>
-	<p>WebAudio Sustain-loop test (hold buttons) - <a href="https://github.com/possan/sustain-js">fork it</a> - by <a href="https://twitter.com/possan">@possan</a></p>
-	<p><button id="drumroll">DRUMROLL</button></p>
-	<p><button id="sheeit">SHEEIT</button></p>
+	<div id="overlay">
+		WebAudio Sustain-loop test (hold buttons) - <a href="https://github.com/possan/sustain-js">fork it</a> - by <a href="https://twitter.com/possan">@possan</a>
+	</div>
+
+	<div id="buttons"></div>
 
 	<script>
 
 		var context = new webkitAudioContext();
 
-		var loop1 = new SustainFile(context);
-		var player1 = new SustainPlayer(context, loop1);
-		loop1.load('drumroll.mp3', 15000, 32000, false);
-		var button1 = document.getElementById('drumroll');
-		button1.addEventListener('mousedown', function() {
-			player1.attack();
-		});
-		button1.addEventListener('mouseup', function() {
-			player1.release();
-		});
-		player1.connect(context.destination);
+		function addbutton(def) {
+			var loop = new SustainFile(context);
+			var player = new SustainPlayer(context, loop);
+			loop.load(def.filename, def.start, def.stop, def.pingpong);
 
-		var loop2 = new SustainFile(context);
-		var player2 = new SustainPlayer(context, loop2);
-		loop2.load('sheeit.mp3', 40000, 70000, true);
-		var button2 = document.getElementById('sheeit');
-		button2.addEventListener('mousedown', function() {
-			player2.attack();
-		});
-		button2.addEventListener('mouseup', function() {
-			player2.release();
-		});
-		player2.connect(context.destination);
+			var button = document.createElement('div');
+			button.className = 'btn';
+
+			var div2 = document.createElement('div');
+			button.appendChild(div2);
+
+			var img = document.createElement('img');
+			img.setAttribute('src', def.image);
+			div2.appendChild(img);
+
+			var span = document.createElement('span');
+			span.innerHTML = def.title;
+			div2.appendChild(span);
+
+			button.addEventListener('mousedown', function() {
+				button.className = 'btn down';
+				player.attack();
+			});
+
+			button.addEventListener('mouseup', function() {
+				button.className = 'btn';
+				player.release();
+			});
+
+			player.connect(context.destination);
+
+			var buttons = document.getElementById('buttons');
+			buttons.appendChild(button);
+		}
+
+		var loops = [
+			{
+				button: 'drumroll',
+				filename: 'drumroll.mp3',
+				start: 1500,
+				stop: 32000,
+				pingpong: false,
+				title: "DRUM ROLL",
+				image: 'drumroll.png'
+			},
+			{
+				button: 'sheeit',
+				filename: 'sheeit.mp3',
+				start: 40000,
+				stop: 70000,
+				pingpong: true,
+				title: "SHEEEIT",
+				image: 'sheeit.png'
+			},
+			{
+				button: 'crickets',
+				filename: 'crickets.mp3',
+				start: 14000,
+				stop: 93000,
+				pingpong: false,
+				title: "CRICKETS",
+				image: 'crickets.png'
+			}
+		];
+
+		for(var i=0; i<loops.length; i++) {
+			addbutton(loops[i]);
+		}
 
 	</script>
 </body>
